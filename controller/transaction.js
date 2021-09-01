@@ -103,13 +103,23 @@ class Transaction {
                 group: ['account_id'],
                 order: [[sequelize.literal('transactionsCount'), 'DESC']]
             });
-
             if(!accounts) {
                 throw new Error('Account not found')
             };
+
+            let maxVolumeAccounts = [];
+            let maxVolume = accounts[0].dataValues.transactionsCount;
+            for (let i=0; i<accounts.length; i++){
+                if (accounts[i].dataValues.transactionsCount >= maxVolume){
+                    maxVolume = accounts[i].dataValues.transactionsCount;
+                    maxVolumeAccounts.push(accounts[i].dataValues.account_id);
+                };
+            };
+            let maxVolumeAccountsLength = maxVolumeAccounts.length;
             return res.status(200).json({
-                    accounts,
-                    maxVolume:accounts[0]
+                'maxVolume':maxVolume,
+                'accounts.length':maxVolumeAccountsLength,
+                'accounts':maxVolumeAccounts
             });
         } catch (e) {
             console.error(e);
