@@ -1,0 +1,22 @@
+{
+  "name": "account-management-backend-level-3",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "echo build your app here",
+    "start": "echo start your app here",
+    "test": "cypress run",
+    "dev": "nodemon app.js"
+  },
+  "devDependencies": {
+    "cypress": "^5.4.0",
+    "nodemon": "^2.0.12"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "joi": "^17.4.2",
+    "mysql2": "^2.3.0",
+    "sequelize": "^6.6.5"
+  }
+}
