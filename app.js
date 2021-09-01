@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const sequelize = require('./models/index');
-const apiRoutes = require('./routes/routes')
+const apiRoutes = require('./routes/routes');
 
 const PORT = process.env.PORT || 3000
 
@@ -16,15 +16,7 @@ app.use( (req, res, next) => {
     res.setHeader('Access-Control-Allow-Credentials', '*');
     next();
 });
-// app.use('*',(req,res,next)=>{
-//     if(req.headers['content-type'] !== 'application/json') {
-//         return res.status(415).json({
-//             message:'Invalid content type'
-//         })
-//     }
-//     next()
-// })
-// app.use('')
+
 app.use('/', apiRoutes);
 
 console.info("APP START ----------");

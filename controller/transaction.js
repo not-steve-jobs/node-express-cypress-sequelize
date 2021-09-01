@@ -2,7 +2,6 @@ const transactionModel = require('../models/DB_associations').Transaction;
 const accountModel = require('../models/DB_associations').Account;
 const {transactionValidate} = require('../validation/transaction');
 const sequelize = require('../models/index');
-const fn = require('fn');
 
 class Transaction {
     create = async (req, res, next) => {
@@ -106,8 +105,8 @@ class Transaction {
             });
 
             if(!accounts) {
-                throw new NotFound(NOT_EXISTS('accounts'));
-            }
+                throw new Error('Account not found')
+            };
             return res.status(200).json({
                     accounts,
                     maxVolume:accounts[0]
