@@ -6,12 +6,11 @@ const sequelize = require('../models/index');
 class Transaction {
     amount = async (req, res, next) => {
         try {
+            if (req.headers['content-type'] !== "application/json"){
+                return res.status(415).json('Wrong content type');
+            };
+
             return sequelize.transaction(async function (t) {
-
-                if (req.headers['content-type'] !== "application/json"){
-                    return res.status(415).json('Wrong content type');
-                };
-
                 // Validate request
                 console.info('Transfer started- - -');
                 const {error, value} = transactionValidate(req.body);
