@@ -3,7 +3,7 @@ const router = express.Router();
 
 const Transaction = require('../controller/transaction');
 
-router.post('/amount', Transaction.create);
+router.post('/amount', Transaction.amount);
 router.get('/transaction/:id', Transaction.getOne);
 router.get('/balance/:id', Transaction.getBalance);
 router.get('/max_transaction_volume', Transaction.getMaxVolume);

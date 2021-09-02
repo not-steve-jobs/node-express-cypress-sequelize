@@ -4,45 +4,53 @@ const {transactionValidate} = require('../validation/transaction');
 const sequelize = require('../models/index');
 
 class Transaction {
-    create = async (req, res, next) => {
+    amount = async (req, res, next) => {
         try {
-            if (req.headers['content-type'] !== "application/json"){
-                return res.status(415).json('Wrong content type');
-            };
-            // Validate request
-            console.info('Transfer started- - -');
-            const {error, value} = transactionValidate(req.body);
-            if (error) {
-                console.error('ValidationError', error.message);
-                return res.status(400).json({
-                    message:error.message
-                });
-            };
-            let account = await accountModel.findOne({ where: {account_id: value.account_id} });
-            if (!account){
-                account = await accountModel.create({
-                    balance: value.amount,
-                    account_id: value.account_id
-                });
-                await account.save();
-            }else {
-                let newBalance = parseInt(account.balance) + parseInt(value.amount);
-                await account.update({
-                    where:{
-                        account_id:value.account_id,
-                    },
-                    balance: newBalance
+            return sequelize.transaction(async function (t) {
+
+                if (req.headers['content-type'] !== "application/json"){
+                    return res.status(415).json('Wrong content type');
+                };
+
+                // Validate request
+                console.info('Transfer started- - -');
+                const {error, value} = transactionValidate(req.body);
+                if (error) {
+                    console.error('ValidationError', error.message);
+                    return res.status(400).json({
+                        message:error.message
+                    });
+                };
+                let account = await accountModel.findOne({ where: {account_id: value.account_id} });
+                if (!account){
+                    account = await accountModel.create({
+                        balance: +(value.amount),
+                        account_id: value.account_id
+                    });
+                    return await account.save();
+                }else {
+                    let newBalance = +(account.balance) + +(value.amount);
+                    return await account.update({
+                        where:{
+                            account_id:value.account_id,
+                        },
+                        balance: newBalance
+                    });
+                }
+
+            }).then(async function (result) {
+                const { value } = transactionValidate(req.body);
+
+                result = await transactionModel.create({
+                    account_id: value.account_id,
+                    amount:value.amount,
+                    transaction_id:req.headers['transaction-id']
                 });
 
-            };
-            const transfer = await transactionModel.create({
-                account_id: value.account_id,
-                amount:value.amount,
-                transaction_id:req.headers['transaction-id']
+                await result.save();
+                return res.status(200).json(result);
             });
 
-            await transfer.save();
-            return res.status(200).json(transfer);
         } catch (e) {
             console.error(e)
             next(e)
